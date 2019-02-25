@@ -14,7 +14,16 @@ contract('xToken', function (accounts) {
             return tokenInstance.standard();
         }).then(function (standard) {
             assert.equal(standard, 'X Token v1.0', 'has correct standard');
-        })
+            return tokenInstance.owner();
+        }).then(function(owner){
+            assert.equal(owner, accounts[0], 'has correct owner');
+            return tokenInstance.creationTime();
+        }).then(function(creationTime){
+            assert.equal(creationTime.toNumber().toString(), Date.now().toString().slice(0,10), 'has correct creation time');
+            return tokenInstance.inflationTime();
+        }).then(function(inflationTime){
+            assert.equal(inflationTime.toNumber().toString(), Date.now().toString().slice(0,10), 'has correct inflation time');
+        });
     });
 
     it('allocates the initial supply upon deplyoment', function () {
