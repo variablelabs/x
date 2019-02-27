@@ -2,14 +2,13 @@ pragma solidity ^0.5.0;
 
 contract xToken{
 
-    string public name = "X Token";
-    string public symbol = "XTOK";
+    string public name = "X Alpha Token";
+    string public symbol = "XA";
     string public standard = "X Token v1.0";
     uint256 public totalSupply;
 
-    address public owner;
+    address payable public owner;
     uint public creationTime;
-    uint public inflationTime;
 
     event Transfer(
         address indexed _from,
@@ -23,7 +22,9 @@ contract xToken{
         uint256 _value
     );
 
-    // TODO: Event for inflate?
+    event Destroy(
+        address indexed _owner
+    );
 
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
@@ -33,7 +34,6 @@ contract xToken{
         totalSupply = _initialSupply;
         owner = msg.sender;
         creationTime = now;
-        inflationTime = now;
     }
 
     modifier onlyBy(address _account){
@@ -41,16 +41,10 @@ contract xToken{
         _;
     }
 
-    modifier onlyAfter(uint _time) {
-        require(now >= _time, "function called too early");
-        _;
-    }
-
-    function inflate(uint256 _percentage) public onlyBy(owner) onlyAfter(inflationTime + 365 days) returns(bool success){
-        require((_percentage <= 0) && (_percentage >= 100), "percentage must be inbetween 0 and 100");
-        totalSupply += _percentage/100*totalSupply;
-        inflationTime = now;
-        return true;
+    function selfDestruct() public onlyBy(owner) {
+        require(msg.sender == owner, "caller is not the owner");
+        emit Destroy(owner);
+        selfdestruct(owner);
     }
 
     function transfer(address _to, uint256 _value) public returns(bool success){

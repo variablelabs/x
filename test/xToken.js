@@ -7,10 +7,10 @@ contract('xToken', accounts => {
             tokenInstance = instance;
             return tokenInstance.name();
         }).then((name) => {
-            assert.equal(name, 'X Token', 'has correct name');
+            assert.equal(name, 'X Alpha Token', 'has correct name');
             return tokenInstance.symbol();
         }).then((symbol) => {
-            assert.equal(symbol, 'XTOK', 'has correct symbol');
+            assert.equal(symbol, 'XA', 'has correct symbol');
             return tokenInstance.standard();
         }).then((standard) => {
             assert.equal(standard, 'X Token v1.0', 'has correct standard');
@@ -90,7 +90,6 @@ contract('xToken', accounts => {
             return tokenInstance.transferFrom(fromAccount, toAccount, 9999, { from: spendingAccount });
         }).then(assert.fail).catch((error) => {
             assert(error.message.indexOf('revert') >= 0, 'cannot transfer value larger than balance');
-            // Try transferring something larger than the approved amount
             return tokenInstance.transferFrom(fromAccount, toAccount, 20, { from: spendingAccount });
         }).then(assert.fail).catch((error) => {
             assert(error.message.indexOf('revert') >= 0, 'cannot transfer value larger than approved amount');
@@ -116,4 +115,13 @@ contract('xToken', accounts => {
         });
     });
 
+    it('selfdestructs contract', () => {
+        return xToken.deployed(accounts[1]).then((instance) => {
+            tokenInstance = instance;
+            return tokenInstance.selfDestruct();
+        }).then((receipt) => {
+            assert.equal(receipt.logs.length, 1, 'triggers an event');
+            assert.equal(receipt.logs[0].event, 'Destroy', 'should be the "Destroy" event');
+        });
+    });
 });
