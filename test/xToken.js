@@ -58,7 +58,7 @@ contract('xToken', accounts => {
         })
     });
 
-    it('approves tokens for delegated transfer',() => {
+    it('approves tokens for delegated transfer', () => {
         return xToken.deployed().then((instance) => {
             tokenInstance = instance;
             return tokenInstance.approve.call(accounts[1], 100);
@@ -77,7 +77,7 @@ contract('xToken', accounts => {
         });
     });
 
-    it('handles delegated token transfers',() => {
+    it('handles delegated token transfers', () => {
         return xToken.deployed().then((instance) => {
             tokenInstance = instance;
             fromAccount = accounts[2];
@@ -115,9 +115,32 @@ contract('xToken', accounts => {
         });
     });
 
-    it('selfdestructs contract', () => {
-        return xToken.deployed(accounts[1]).then((instance) => {
+    it('pauses a contract', () => {
+        return xToken.deployed().then((instance) => {
             tokenInstance = instance;
+            return tokenInstance.setPauseValue(true);
+        }).then((receipt) => {
+            assert.equal(receipt.logs.length, 1, 'triggers an event');
+            assert.equal(receipt.logs[0].event, 'Pause', 'should be the "Pause" event');
+            return tokenInstance.transfer.call(accounts[1], 50);
+        }).then(assert.fail).catch((error) => {
+            assert(error.message.indexOf('revert') >= 0, 'cannot call functions of a paused contract');
+            return tokenInstance.setPauseValue(false);
+        }).then((receipt) => {
+            assert.equal(receipt.logs.length, 1, 'triggers an event');
+            assert.equal(receipt.logs[0].event, 'Pause', 'should be the "Pause" event');
+            return tokenInstance.transfer.call(accounts[1], 50);
+        }).then((success) => {
+            assert.equal(success, true, 'it returns true');
+        });
+    });
+
+    it('selfdestructs contract', () => {
+        return xToken.deployed().then((instance) => {
+            tokenInstance = instance;
+            return tokenInstance.selfDestruct({ from: accounts[1] });
+        }).then(assert.fail).catch((error) => {
+            assert(error.message.indexOf('revert') >= 0, 'cannot delete from non owner address');
             return tokenInstance.selfDestruct();
         }).then((receipt) => {
             assert.equal(receipt.logs.length, 1, 'triggers an event');
