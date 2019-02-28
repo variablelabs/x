@@ -3,9 +3,10 @@ pragma solidity ^0.5.0;
 contract xToken{
 
     string public name = "X Alpha Token";
-    string public symbol = "XA";
+    string public symbol = "XAL";
     string public standard = "X Token v1.0";
     uint256 public totalSupply;
+    uint8 public decimals;
 
     address payable public owner;
     uint public creationTime;
@@ -38,6 +39,7 @@ contract xToken{
     constructor(uint256 _initialSupply) public {
         balanceOf[msg.sender] = _initialSupply;
         totalSupply = _initialSupply;
+        decimals = 18;
         owner = msg.sender;
         creationTime = now;
         paused = false;

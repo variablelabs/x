@@ -10,7 +10,7 @@ contract('xToken', accounts => {
             assert.equal(name, 'X Alpha Token', 'has correct name');
             return tokenInstance.symbol();
         }).then((symbol) => {
-            assert.equal(symbol, 'XA', 'has correct symbol');
+            assert.equal(symbol, 'XAL', 'has correct symbol');
             return tokenInstance.standard();
         }).then((standard) => {
             assert.equal(standard, 'X Token v1.0', 'has correct standard');
@@ -26,10 +26,13 @@ contract('xToken', accounts => {
             tokenInstance = instance;
             return tokenInstance.totalSupply();
         }).then((totalSupply) => {
-            assert.equal(totalSupply.toNumber(), 1000000, 'sets the total supply to 100000');
+            assert.equal(totalSupply.toNumber(), 10000000, 'sets the total supply to 100000');
             return tokenInstance.balanceOf(accounts[0]);
         }).then((adminBalance) => {
-            assert.equal(adminBalance.toNumber(), 1000000, 'allocates initital supply to admin');
+            assert.equal(adminBalance.toNumber(), 10000000, 'allocates initital supply to admin');
+            return tokenInstance.decimals();
+        }).then((decimals) => {
+            assert.equal(decimals, 18, 'number of decimal places');
         });
     });
 
@@ -54,7 +57,7 @@ contract('xToken', accounts => {
             assert.equal(balance.toNumber(), 250000, 'adds the amount to the receiving account');
             return tokenInstance.balanceOf(accounts[0]);
         }).then((balance) => {
-            assert.equal(balance.toNumber(), 750000, 'deducts the amountfrom the sending account');
+            assert.equal(balance.toNumber(), 9750000, 'deducts the amountfrom the sending account');
         })
     });
 

@@ -1,5 +1,5 @@
 var xToken = artifacts.require("./xToken.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(xToken, 1000000);
+  deployer.deploy(xToken, 10000000);
 };
