@@ -55,8 +55,7 @@ contract xToken{
 
     /**
     @dev Constructor for the contract
-    @param _initialSupply
-    Assigns the initial supply to the owner of the contract. Sets the totalSupply to the initialSupply.
+    @param _initialSupply Assigns the initial supply to the owner of the contract. Sets the totalSupply to the initialSupply.
     Sets the decimals, owner and creationTime parameters. 
     */
     constructor(uint256 _initialSupply) public {
@@ -69,9 +68,7 @@ contract xToken{
 
     /**
     @dev Function to transfer funds from the owner to an account
-    @param _to
-    @param _value
-    @return success
+    @param _to @param _value @return success
     Function to transfer specified number of tokenss from the owner to a specified address.
     Changes the balances of both accounts and emits a 'Transfer' event. 
     */
@@ -85,9 +82,7 @@ contract xToken{
 
     /**
     @dev Function to approve an address to spend some tokens
-    @param _spender
-    @param _value
-    @return success
+    @param _spender @param _value @return success
     Function changes the allowance limit of a specified address by a fixed value. 
     Emits an 'Approval' event.
     */
@@ -99,10 +94,7 @@ contract xToken{
 
     /**
     @dev Function to transfer funds from the owner to an account
-    @param _from
-    @param _to
-    @param _value
-    @return success
+    @param _from @param _to @param _value @return success
     Function to transfer specified number of tokenss from the owner to a specified address.
     Requires the value to be lesser than the balance of the sender, allowance limit of the sender.
     Changes the balances of both accounts, changes the allowance limit and emits a 'Transfer' event. 
