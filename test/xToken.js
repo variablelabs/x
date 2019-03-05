@@ -26,10 +26,10 @@ contract('xToken', accounts => {
             tokenInstance = instance;
             return tokenInstance.totalSupply();
         }).then((totalSupply) => {
-            assert.equal(totalSupply.toNumber(), 10000000, 'sets the total supply to 100000');
+            assert.equal(totalSupply.toString(), '10000000000000000000000000', 'sets the total supply to 10000000000000000000000000');
             return tokenInstance.balanceOf(accounts[0]);
         }).then((adminBalance) => {
-            assert.equal(adminBalance.toNumber(), 10000000, 'allocates initital supply to admin');
+            assert.equal(adminBalance.toString(), '10000000000000000000000000', 'allocates initital supply to admin');
             return tokenInstance.decimals();
         }).then((decimals) => {
             assert.equal(decimals, 18, 'number of decimal places');
@@ -39,7 +39,7 @@ contract('xToken', accounts => {
     it('transfers ownership', () => {
         return xToken.deployed().then((instance) => {
             tokenInstance = instance;
-            return tokenInstance.transfer.call(accounts[1], 99999999);
+            return tokenInstance.transfer.call(accounts[1], '10000000000000000000000001');
         }).then(assert.fail).catch((error) => {
             assert(error.message.indexOf('revert') >= 0, 'error message must contain revert');
             return tokenInstance.transfer.call(accounts[1], 250000, { from: accounts[0] });
@@ -57,7 +57,7 @@ contract('xToken', accounts => {
             assert.equal(balance.toNumber(), 250000, 'adds the amount to the receiving account');
             return tokenInstance.balanceOf(accounts[0]);
         }).then((balance) => {
-            assert.equal(balance.toNumber(), 9750000, 'deducts the amountfrom the sending account');
+            assert.equal(balance.toString(), '9999999999999999999750000', 'deducts the amountfrom the sending account');
         })
     });
 

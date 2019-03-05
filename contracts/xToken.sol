@@ -84,9 +84,9 @@ contract xToken{
     Sets the decimals, owner and creationTime parameters. 
     */
     constructor(uint256 _initialSupply) public {
-        balanceOf[msg.sender] = _initialSupply;
-        totalSupply = _initialSupply;
         decimals = 18;
+        balanceOf[msg.sender] = _initialSupply * 10 ** uint256(decimals);
+        totalSupply = _initialSupply * 10 ** uint256(decimals);
         owner = msg.sender;
         creationTime = now;
     }

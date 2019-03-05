@@ -1,11 +1,11 @@
 {
   "contractName": "SafeMath",
   "abi": [],
-  "bytecode": "0x604c602c600b82828239805160001a60731460008114601c57601e565bfe5b5030600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a723058207c000ad9f9485a585dd4c2d420491c9373e50e34535eb277e924b94d0e0499480029",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a723058207c000ad9f9485a585dd4c2d420491c9373e50e34535eb277e924b94d0e0499480029",
+  "bytecode": "0x604c602c600b82828239805160001a60731460008114601c57601e565bfe5b5030600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a7230582011b04f3f96f2f6129e0682f38fe91a55081d88429936d84033c4302233a0fc750029",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a7230582011b04f3f96f2f6129e0682f38fe91a55081d88429936d84033c4302233a0fc750029",
   "sourceMap": "337:471:1:-;;132:2:-1;166:7;155:9;146:7;137:37;252:7;246:14;243:1;238:23;232:4;229:33;270:1;265:20;;;;222:63;;265:20;274:9;222:63;;298:9;295:1;288:20;328:4;319:7;311:22;352:7;343;336:24",
   "deployedSourceMap": "337:471:1:-;;;;;;;;",
-  "source": "pragma solidity ^0.5.0;\r\n\r\n/**\r\n@dev Contract for the 'X Alpha Token'\r\nUsed as a token for all services by Variable Labs.\r\nCompliant with the ERC20 standards. https://eips.ethereum.org/EIPS/eip-20\r\n@author https://github.com/parthvshah\r\n*/\r\n\r\n/**\r\n * @title SafeMath\r\n * @dev Math operations with safety checks that throw on error\r\n */\r\nlibrary SafeMath {\r\n  /**\r\n  * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).\r\n  */\r\n  function sub(uint256 a, uint256 b) internal pure returns (uint256) {\r\n    require(b <= a);\r\n    uint256 c = a - b;\r\n    return c;\r\n  }\r\n\r\n  /**\r\n  * @dev Adds two numbers, throws on overflow.\r\n  */\r\n  function add(uint256 a, uint256 b) internal pure returns (uint256) {\r\n    uint256 c = a + b;\r\n    require(c >= a);\r\n    return c;\r\n  }\r\n}\r\n\r\ncontract xToken{\r\n    using SafeMath for uint256;\r\n    /**\r\n    @dev Specifics of the token\r\n    Consists of the name, symbol, standard, totalSupply and decimals of the token.\r\n    Accessible via getter functions.\r\n    */\r\n    string public name = \"X Alpha Token\";\r\n    string public symbol = \"XAL\";\r\n    string public standard = \"X Token v1.0\";\r\n    uint256 public totalSupply;\r\n    uint8 public decimals;\r\n\r\n    /**\r\n    @dev Owner and creation time\r\n    The address of the owner is stored with the time of creation of the contract.\r\n    */\r\n    address payable public owner;\r\n    uint public creationTime;\r\n\r\n    /**\r\n    @dev Event for a transfer\r\n    _from and _to with the _value are emitted.\r\n    */\r\n    event Transfer(\r\n        address indexed _from,\r\n        address indexed _to,\r\n        uint256 _value\r\n    );\r\n\r\n    /**\r\n    @dev Event for an Approval\r\n    _owner and _spender with the _value are emitted.\r\n    */\r\n    event Approval(\r\n        address indexed _owner,\r\n        address indexed _spender,\r\n        uint256 _value\r\n    );\r\n\r\n    /**\r\n    @dev Store for balances and allowances\r\n    Mappings to track each users' balance and allowance \r\n    */\r\n    mapping(address => uint256) public balanceOf;\r\n    mapping(address => mapping(address => uint256)) public allowance;\r\n\r\n    /**\r\n    @dev Constructor for the contract\r\n    @param _initialSupply Assigns the initial supply to the owner of the contract. Sets the totalSupply to the initialSupply.\r\n    Sets the decimals, owner and creationTime parameters. \r\n    */\r\n    constructor(uint256 _initialSupply) public {\r\n        balanceOf[msg.sender] = _initialSupply;\r\n        totalSupply = _initialSupply;\r\n        decimals = 18;\r\n        owner = msg.sender;\r\n        creationTime = now;\r\n    }\r\n\r\n    /**\r\n    @dev Function to transfer funds from the owner to an account\r\n    @param _to @param _value @return success\r\n    Function to transfer specified number of tokenss from the owner to a specified address.\r\n    Changes the balances of both accounts and emits a 'Transfer' event. \r\n    */\r\n    function transfer(address _to, uint256 _value) public returns(bool success){\r\n        require(balanceOf[msg.sender] >= _value, \"balance is lower than value to be transferred\");\r\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);\r\n        balanceOf[_to] = balanceOf[_to].add(_value);\r\n        emit Transfer(msg.sender, _to, _value);\r\n        return true;\r\n    }\r\n\r\n    /**\r\n    @dev Function to approve an address to spend some tokens\r\n    @param _spender @param _value @return success\r\n    Function changes the allowance limit of a specified address by a fixed value. \r\n    Emits an 'Approval' event.\r\n    */\r\n    function approve(address _spender, uint256 _value) public returns(bool success){\r\n        allowance[msg.sender][_spender] = _value;\r\n        emit Approval(msg.sender, _spender, _value);\r\n        return true;\r\n    }\r\n\r\n    /**\r\n    @dev Function to transfer funds from the owner to an account\r\n    @param _from @param _to @param _value @return success\r\n    Function to transfer specified number of tokenss from the owner to a specified address.\r\n    Requires the value to be lesser than the balance of the sender, allowance limit of the sender.\r\n    Changes the balances of both accounts, changes the allowance limit and emits a 'Transfer' event. \r\n    */\r\n    function transferFrom(address _from, address _to, uint256 _value) public returns(bool success){\r\n        require(_value <= balanceOf[_from], \"value being transfered is larger than balance\");\r\n        require(_value <= allowance[_from][msg.sender], \"value being spent is larger than allowance\");\r\n\r\n        balanceOf[_from] = balanceOf[_from].sub(_value);\r\n        balanceOf[_to] = balanceOf[_to].add(_value);\r\n\r\n        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);\r\n\r\n        emit Transfer(_from, _to, _value);\r\n        return true;\r\n    }\r\n}",
+  "source": "pragma solidity ^0.5.0;\r\n\r\n/**\r\n@dev Contract for the 'X Alpha Token'\r\nUsed as a token for all services by Variable Labs.\r\nCompliant with the ERC20 standards. https://eips.ethereum.org/EIPS/eip-20\r\n@author https://github.com/parthvshah\r\n*/\r\n\r\n/**\r\n * @title SafeMath\r\n * @dev Math operations with safety checks that throw on error\r\n */\r\nlibrary SafeMath {\r\n  /**\r\n  * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).\r\n  */\r\n  function sub(uint256 a, uint256 b) internal pure returns (uint256) {\r\n    require(b <= a);\r\n    uint256 c = a - b;\r\n    return c;\r\n  }\r\n\r\n  /**\r\n  * @dev Adds two numbers, throws on overflow.\r\n  */\r\n  function add(uint256 a, uint256 b) internal pure returns (uint256) {\r\n    uint256 c = a + b;\r\n    require(c >= a);\r\n    return c;\r\n  }\r\n}\r\n\r\ncontract xToken{\r\n    using SafeMath for uint256;\r\n    /**\r\n    @dev Specifics of the token\r\n    Consists of the name, symbol, standard, totalSupply and decimals of the token.\r\n    Accessible via getter functions.\r\n    */\r\n    string public name = \"X Alpha Token\";\r\n    string public symbol = \"XAL\";\r\n    string public standard = \"X Token v1.0\";\r\n    uint256 public totalSupply;\r\n    uint8 public decimals;\r\n\r\n    /**\r\n    @dev Owner and creation time\r\n    The address of the owner is stored with the time of creation of the contract.\r\n    */\r\n    address payable public owner;\r\n    uint public creationTime;\r\n\r\n    /**\r\n    @dev Event for a transfer\r\n    _from and _to with the _value are emitted.\r\n    */\r\n    event Transfer(\r\n        address indexed _from,\r\n        address indexed _to,\r\n        uint256 _value\r\n    );\r\n\r\n    /**\r\n    @dev Event for an Approval\r\n    _owner and _spender with the _value are emitted.\r\n    */\r\n    event Approval(\r\n        address indexed _owner,\r\n        address indexed _spender,\r\n        uint256 _value\r\n    );\r\n\r\n    /**\r\n    @dev Store for balances and allowances\r\n    Mappings to track each users' balance and allowance \r\n    */\r\n    mapping(address => uint256) public balanceOf;\r\n    mapping(address => mapping(address => uint256)) public allowance;\r\n\r\n    /**\r\n    @dev Constructor for the contract\r\n    @param _initialSupply Assigns the initial supply to the owner of the contract. Sets the totalSupply to the initialSupply.\r\n    Sets the decimals, owner and creationTime parameters. \r\n    */\r\n    constructor(uint256 _initialSupply) public {\r\n        balanceOf[msg.sender] = _initialSupply;\r\n        decimals = 18;\r\n        totalSupply = _initialSupply;\r\n        owner = msg.sender;\r\n        creationTime = now;\r\n    }\r\n\r\n    /**\r\n    @dev Function to transfer funds from the owner to an account\r\n    @param _to @param _value @return success\r\n    Function to transfer specified number of tokenss from the owner to a specified address.\r\n    Changes the balances of both accounts and emits a 'Transfer' event. \r\n    */\r\n    function transfer(address _to, uint256 _value) public returns(bool success){\r\n        require(balanceOf[msg.sender] >= _value, \"balance is lower than value to be transferred\");\r\n        balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);\r\n        balanceOf[_to] = balanceOf[_to].add(_value);\r\n        emit Transfer(msg.sender, _to, _value);\r\n        return true;\r\n    }\r\n\r\n    /**\r\n    @dev Function to approve an address to spend some tokens\r\n    @param _spender @param _value @return success\r\n    Function changes the allowance limit of a specified address by a fixed value. \r\n    Emits an 'Approval' event.\r\n    */\r\n    function approve(address _spender, uint256 _value) public returns(bool success){\r\n        allowance[msg.sender][_spender] = _value;\r\n        emit Approval(msg.sender, _spender, _value);\r\n        return true;\r\n    }\r\n\r\n    /**\r\n    @dev Function to transfer funds from the owner to an account\r\n    @param _from @param _to @param _value @return success\r\n    Function to transfer specified number of tokenss from the owner to a specified address.\r\n    Requires the value to be lesser than the balance of the sender, allowance limit of the sender.\r\n    Changes the balances of both accounts, changes the allowance limit and emits a 'Transfer' event. \r\n    */\r\n    function transferFrom(address _from, address _to, uint256 _value) public returns(bool success){\r\n        require(_value <= balanceOf[_from], \"value being transfered is larger than balance\");\r\n        require(_value <= allowance[_from][msg.sender], \"value being spent is larger than allowance\");\r\n\r\n        balanceOf[_from] = balanceOf[_from].sub(_value);\r\n        balanceOf[_to] = balanceOf[_to].add(_value);\r\n\r\n        allowance[_from][msg.sender] = allowance[_from][msg.sender].sub(_value);\r\n\r\n        emit Transfer(_from, _to, _value);\r\n        return true;\r\n    }\r\n}",
   "sourcePath": "C:/Users/parth/Documents/VariableLabs/x/contracts/xToken.sol",
   "ast": {
     "absolutePath": "/C/Users/parth/Documents/VariableLabs/x/contracts/xToken.sol",
@@ -1337,40 +1337,45 @@
                     "leftHandSide": {
                       "argumentTypes": null,
                       "id": 165,
-                      "name": "totalSupply",
+                      "name": "decimals",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 121,
-                      "src": "2456:11:1",
+                      "referencedDeclaration": 123,
+                      "src": "2456:8:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
+                        "typeIdentifier": "t_uint8",
+                        "typeString": "uint8"
                       }
                     },
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
+                      "hexValue": "3138",
                       "id": 166,
-                      "name": "_initialSupply",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 155,
-                      "src": "2470:14:1",
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "2467:2:1",
+                      "subdenomination": null,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
-                      }
+                        "typeIdentifier": "t_rational_18_by_1",
+                        "typeString": "int_const 18"
+                      },
+                      "value": "18"
                     },
-                    "src": "2456:28:1",
+                    "src": "2456:13:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
                     }
                   },
                   "id": 168,
                   "nodeType": "ExpressionStatement",
-                  "src": "2456:28:1"
+                  "src": "2456:13:1"
                 },
                 {
                   "expression": {
@@ -1383,45 +1388,40 @@
                     "leftHandSide": {
                       "argumentTypes": null,
                       "id": 169,
-                      "name": "decimals",
+                      "name": "totalSupply",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 123,
-                      "src": "2495:8:1",
+                      "referencedDeclaration": 121,
+                      "src": "2480:11:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_uint8",
-                        "typeString": "uint8"
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
                       }
                     },
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "hexValue": "3138",
                       "id": 170,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": true,
-                      "kind": "number",
-                      "lValueRequested": false,
-                      "nodeType": "Literal",
-                      "src": "2506:2:1",
-                      "subdenomination": null,
+                      "name": "_initialSupply",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 155,
+                      "src": "2494:14:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_rational_18_by_1",
-                        "typeString": "int_const 18"
-                      },
-                      "value": "18"
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
                     },
-                    "src": "2495:13:1",
+                    "src": "2480:28:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_uint8",
-                      "typeString": "uint8"
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
                     }
                   },
                   "id": 172,
                   "nodeType": "ExpressionStatement",
-                  "src": "2495:13:1"
+                  "src": "2480:28:1"
                 },
                 {
                   "expression": {
@@ -5126,40 +5126,45 @@
                     "leftHandSide": {
                       "argumentTypes": null,
                       "id": 165,
-                      "name": "totalSupply",
+                      "name": "decimals",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 121,
-                      "src": "2456:11:1",
+                      "referencedDeclaration": 123,
+                      "src": "2456:8:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
+                        "typeIdentifier": "t_uint8",
+                        "typeString": "uint8"
                       }
                     },
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
+                      "hexValue": "3138",
                       "id": 166,
-                      "name": "_initialSupply",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 155,
-                      "src": "2470:14:1",
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "2467:2:1",
+                      "subdenomination": null,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
-                      }
+                        "typeIdentifier": "t_rational_18_by_1",
+                        "typeString": "int_const 18"
+                      },
+                      "value": "18"
                     },
-                    "src": "2456:28:1",
+                    "src": "2456:13:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
                     }
                   },
                   "id": 168,
                   "nodeType": "ExpressionStatement",
-                  "src": "2456:28:1"
+                  "src": "2456:13:1"
                 },
                 {
                   "expression": {
@@ -5172,45 +5177,40 @@
                     "leftHandSide": {
                       "argumentTypes": null,
                       "id": 169,
-                      "name": "decimals",
+                      "name": "totalSupply",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 123,
-                      "src": "2495:8:1",
+                      "referencedDeclaration": 121,
+                      "src": "2480:11:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_uint8",
-                        "typeString": "uint8"
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
                       }
                     },
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "hexValue": "3138",
                       "id": 170,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": true,
-                      "kind": "number",
-                      "lValueRequested": false,
-                      "nodeType": "Literal",
-                      "src": "2506:2:1",
-                      "subdenomination": null,
+                      "name": "_initialSupply",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 155,
+                      "src": "2494:14:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_rational_18_by_1",
-                        "typeString": "int_const 18"
-                      },
-                      "value": "18"
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
                     },
-                    "src": "2495:13:1",
+                    "src": "2480:28:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_uint8",
-                      "typeString": "uint8"
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
                     }
                   },
                   "id": 172,
                   "nodeType": "ExpressionStatement",
-                  "src": "2495:13:1"
+                  "src": "2480:28:1"
                 },
                 {
                   "expression": {
@@ -7591,7 +7591,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-03-04T08:44:05.017Z",
+  "updatedAt": "2019-03-05T19:04:58.928Z",
   "devdoc": {
     "details": "Math operations with safety checks that throw on error\r",
     "methods": {},
