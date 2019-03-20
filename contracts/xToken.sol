@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity 0.5.0;
 
 /**
 @dev Contract for the 'X Alpha Token'
@@ -33,6 +33,17 @@ library SafeMath {
 
 contract xToken{
     using SafeMath for uint256;
+
+    /**
+    @dev Modifier for protecting functions
+    @param _address 
+    The function is executed only if the sender address is the same as _address
+    */
+    modifier onlyBy(address _address) {
+		require(msg.sender == _address, 'forbidden request');
+		_;
+    }
+
     /**
     @dev Specifics of the token
     Consists of the name, symbol, standard, totalSupply and decimals of the token.
@@ -94,7 +105,7 @@ contract xToken{
     /**
     @dev Function to transfer funds from the owner to an account
     @param _to @param _value @return success
-    Function to transfer specified number of tokenss from the owner to a specified address.
+    Function to transfer specified number of tokens from the owner to a specified address.
     Changes the balances of both accounts and emits a 'Transfer' event. 
     */
     function transfer(address _to, uint256 _value) public returns(bool success){
@@ -136,4 +147,7 @@ contract xToken{
         emit Transfer(_from, _to, _value);
         return true;
     }
+    function killContract() public onlyBy(owner){
+		selfdestruct(owner);
+	}
 }

@@ -47,12 +47,12 @@ module.exports = {
      port: 7545,            // Standard Ethereum port (default: none) Truffle port
      network_id: "*",       // Any network (default: none)
     },
-    rinkeby: {
-      provider: () => {
-        return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/e90a938903e446578cdabbad87dfec7f")
-      },
-      network_id: 4,
-    }
+    // rinkeby: {
+    //   provider: () => {
+    //     return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/e90a938903e446578cdabbad87dfec7f")
+    //   },
+    //   network_id: 4,
+    // }
 
     // Another network with more advanced options...
     // advanced: {
